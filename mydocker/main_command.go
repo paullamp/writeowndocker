@@ -9,6 +9,19 @@ import (
 	"github.com/urfave/cli"
 )
 
+var commitCommand = cli.Command{
+	Name:  "commit",
+	Usage: "commit -a container into image",
+	Action: func(c *cli.Context) error {
+		if c.NArg() < 1 {
+			return fmt.Errorf("missing container commands")
+		}
+		imageName := c.Args().Get(0)
+		commitContainer(imageName)
+		return nil
+	},
+}
+
 var runCommand = cli.Command{
 	Name: "run",
 	Usage: `create a container with namespace and cgroups limit

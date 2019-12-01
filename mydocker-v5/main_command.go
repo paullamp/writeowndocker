@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"mydocker-v5/cgroups/subsystems"
+	// "mydocker-v5/cgroups/subsystems"
 	"mydocker-v5/container"
 
 	log "github.com/Sirupsen/logrus"
@@ -42,12 +42,12 @@ var runCommand = cli.Command{
 			cmdArray = append(cmdArray, arg)
 		}
 		tty := context.Bool("ti")
-		resConf := &subsystems.ResourceConfig{
-			MemoryLimit: context.String("m"),
-			CpuSet:      context.String("cpuset"),
-			CpuShare:    context.String("cpushare"),
-		}
-		Run(tty, cmdArray, resConf)
+		// resConf := &subsystems.ResourceConfig{
+		// 	MemoryLimit: context.String("m"),
+		// 	CpuSet:      context.String("cpuset"),
+		// 	CpuShare:    context.String("cpushare"),
+		// }
+		Run(tty, cmdArray)
 		return nil
 	},
 }

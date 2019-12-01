@@ -1,6 +1,7 @@
 package container
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"syscall"
@@ -99,6 +100,7 @@ func CreateMountPoint(rootURL, mntURL string) {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
+		fmt.Println("i am wrong is herer")
 		log.Errorf("%v", err)
 	}
 }

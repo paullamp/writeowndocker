@@ -1,8 +1,8 @@
 package main
 
 import (
-	"mydocker-v5/cgroups"
-	"mydocker-v5/cgroups/subsystems"
+	// "mydocker-v5/cgroups"
+	// "mydocker-v5/cgroups/subsystems"
 	"mydocker-v5/container"
 	"os"
 	"strings"
@@ -19,7 +19,7 @@ import (
 // 	os.Exit(-1)
 // }
 
-func Run(tty bool, comArray []string, res *subsystems.ResourceConfig) {
+func Run(tty bool, comArray []string) {
 	parent, writePipe := container.NewParentProcess(tty)
 	if parent == nil {
 		log.Errorf("new  parent process error")
@@ -30,10 +30,10 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig) {
 	}
 
 	//use mydocker-cgroup as cgroup name
-	cgroupManager := cgroups.NewCgroupManager("mydocker-cgroup")
-	defer cgroupManager.Destroy()
-	cgroupManager.Set(res)
-	cgroupManager.Apply(parent.Process.Pid)
+	// cgroupManager := cgroups.NewCgroupManager("mydocker-cgroup")
+	// defer cgroupManager.Destroy()
+	// cgroupManager.Set(res)
+	// cgroupManager.Apply(parent.Process.Pid)
 	sendInitCommand(comArray, writePipe)
 	parent.Wait()
 }

@@ -45,6 +45,7 @@ func RunContainerInitProcess() error {
 
 	setUpMount()
 	path, err := exec.LookPath(cmdArray[0])
+	fmt.Println("The path found in cmdarray is : ", path)
 	if err != nil {
 		log.Errorf("exec loop path error %v", err)
 		return err
