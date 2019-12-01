@@ -38,7 +38,7 @@ var runCommand = cli.Command{
 		}
 		// cmd := context.Args().Get(0)
 		var cmdArray []string
-		for _, arg := range context.Args() {
+		for _, arg := range context.Args().Slice() {
 			cmdArray = append(cmdArray, arg)
 		}
 		tty := context.Bool("ti")
@@ -59,7 +59,7 @@ var initCommand = cli.Command{
 		log.Infof("init come on")
 		cmd := context.Args().Get(0)
 		log.Infof("command %s", cmd)
-		err := container.RunContainerInitProcess(cmd, nil)
+		err := container.RunContainerInitProcess()
 		return err
 
 	},
