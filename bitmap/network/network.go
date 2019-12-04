@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 	"path"
+	"path/filepath"
 
 	"github.com/Sirupsen/logrus"
 
@@ -14,6 +15,11 @@ import (
 
 const (
 	defaultNetworkPath = "/tmp/mynet/"
+)
+
+var (
+	networks = map[string]*Network{}
+	drivers  = map[string]NetworkDriver{}
 )
 
 type Network struct {
@@ -100,8 +106,8 @@ func (nw *Network) dump(dumpPath string) error {
 }
 
 func (nw *Network) Load(dumpPath string) error {
-	fullpath := dumpPath + nw.Name
-	nwConfigFile, err := os.Open(fullpath)
+	// fullpath := dumpPath + nw.Name
+	nwConfigFile, err := os.Open(dumpPath)
 	defer nwConfigFile.Close()
 	if err != nil {
 		return err
@@ -120,4 +126,65 @@ func (nw *Network) Load(dumpPath string) error {
 	fmt.Println(nw)
 	fmt.Println(string(nwJson[:n]))
 	return nil
+}
+
+func Init() error {
+	fmt.Println("Iinit will called ?")
+	var bridgeDriver = BridgeNetworkDriver{}
+	drivers[bridgeDriver.Name()] = &bridgeDriver
+
+	//check if network exist
+	if _, err := os.Stat(defaultNetworkPath); err != nil {
+		if os.IsNotExist(err) {
+			os.MkdirAll(defaultNetworkPath, 0755)
+		} else {
+			return err
+		}
+	}
+
+	//check all network config files
+	filepath.Walk(defaultNetworkPath, func(nwPath string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		_, nwName := path.Split(nwPath)
+		nw := &Network{
+			Name: nwName,
+		}
+		if err := nw.Load(nwPath); err != nil {
+			logrus.Errorf("error load network: %s", err)
+		}
+		networks[nwName] = nw
+		return nil
+	})
+	return nil
+}
+
+func ListNetwork() {
+	fmt.Println("######################")
+	for _, nw := range networks {
+		fmt.Println(nw)
+	}
+	fmt.Println("######################")
+}
+
+func DeleteNetwork(networkName string) error {
+	nw, ok := networks[networkName]
+	if !ok {
+		return fmt.Errorf("no such network:%s", networkName)
+	}
+	return nw.remove(defaultNetworkPath)
+}
+
+func (nw *Network) remove(dumpPath string) error {
+	if _, err := os.Stat(path.Join(dumpPath, nw.Name)); err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		} else {
+			return err
+		}
+	} else {
+		delete(networks, nw.Name)
+		return os.Remove(path.Join(dumpPath, nw.Name))
+	}
 }
